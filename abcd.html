@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Zephyrion United</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    background:black;
+    color:white;
+    font-family:'Segoe UI',Arial,sans-serif;
+    height:100vh;
+    overflow:hidden;
+}
+canvas{position:fixed;inset:0;z-index:-1}
+
+.container{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+.card{
+    width:100%;
+    max-width:360px;
+    background:rgba(255,255,255,0.07);
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 0 35px rgba(0,200,255,0.4);
+    animation:fadeUp 1s ease;
+}
+
+.logo{
+    font-size:34px;
+    font-weight:bold;
+    color:#00eaff;
+    letter-spacing:2px;
+}
+.sublogo{
+    font-size:14px;
+    opacity:.7;
+    margin-bottom:18px;
+}
+
+h1{margin-bottom:15px}
+
+input{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    font-size:16px;
+    margin-bottom:12px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    font-size:16px;
+    font-weight:bold;
+    background:#00eaff;
+    color:black;
+    cursor:pointer;
+    margin-top:18px;
+}
+
+button.secondary{
+    background:#111;
+    color:white;
+    border:1px solid #00eaff;
+}
+
+a{color:#00eaff;font-weight:bold;text-decoration:none}
+
+@keyframes fadeUp{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1;transform:translateY(0)}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<!-- ================= HALAMAN 1 ================= -->
+<div class="container" id="page1">
+    <div class="card">
+        <div class="logo">ZEPHYRION</div>
+        <div class="sublogo">UNITED</div>
+
+        <h1>WELCOME</h1>
+
+        <!-- DATA DIRI -->
+        <input id="name" placeholder="Nama Anggota">
+        <input id="country" placeholder="Negara">
+
+        <!-- TOMBOL CONFIRM DI BAWAH DATA -->
+        <button onclick="confirmData()">CONFIRM</button>
+    </div>
+</div>
+
+<!-- ================= HALAMAN 2 ================= -->
+<div class="container" id="page2" style="display:none">
+    <div class="card">
+        <div class="logo">WELCOME</div>
+
+        <h2 id="showName"></h2>
+        <p id="showCountry"></p>
+        <p id="showID"></p>
+        <p id="showRank"></p>
+
+        <p style="margin:12px 0">
+            Resmi menjadi anggota<br>
+            <b>Zephyrion United</b>
+        </p>
+
+        <a href="https://discord.gg/Sw7aDxZTQ" target="_blank">
+            MASUK DISCORD
+        </a>
+
+        <button class="secondary" onclick="openRules()">RULES CLAN</button>
+        <button onclick="reset()">KELUAR</button>
+    </div>
+</div>
+
+<!-- ================= RULES ================= -->
+<div class="container" id="rulesPage" style="display:none">
+    <div class="card" style="text-align:left">
+        <div class="logo" style="text-align:center">RULES</div>
+        <ol style="margin-top:15px;font-size:14px;line-height:1.6">
+            <li>Hormati semua anggota clan</li>
+            <li>Dilarang toxic & spam</li>
+            <li>Wajib join Discord</li>
+            <li>Gunakan nama yang sopan</li>
+            <li>Patuhi leader & admin</li>
+        </ol>
+        <button style="margin-top:18px" onclick="back()">KEMBALI</button>
+    </div>
+</div>
+
+<script>
+// ===== CONFIRM DATA =====
+function generateID(){
+    return "ZU-" + Math.floor(10000 + Math.random()*90000);
+}
+
+function confirmData(){
+    const name = document.getElementById("name").value.trim();
+    const country = document.getElementById("country").value.trim();
+
+    if(!name || !country){
+        alert("Nama dan Negara wajib diisi!");
+        return;
+    }
+
+    const id = generateID();
+    const rank = "Recruit";
+
+    page1.style.display = "none";
+    page2.style.display = "flex";
+
+    showName.innerText = name;
+    showCountry.innerText = "Negara: " + country;
+    showID.innerText = "ID Anggota: " + id;
+    showRank.innerText = "Rank: " + rank;
+}
+
+// ===== NAVIGATION =====
+function openRules(){
+    page2.style.display="none";
+    rulesPage.style.display="flex";
+}
+function back(){
+    rulesPage.style.display="none";
+    page2.style.display="flex";
+}
+function reset(){
+    location.reload();
+}
+
+// ===== STAR BACKGROUND =====
+const c=document.getElementById("stars");
+const ctx=c.getContext("2d");
+function resize(){c.width=innerWidth;c.height=innerHeight}
+resize();
+
+let stars=[];
+for(let i=0;i<150;i++){
+    stars.push({
+        x:Math.random()*c.width,
+        y:Math.random()*c.height,
+        r:Math.random()*1.5,
+        s:Math.random()*0.6+0.2
+    });
+}
+function animate(){
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.fillStyle="white";
+    stars.forEach(st=>{
+        ctx.beginPath();
+        ctx.arc(st.x,st.y,st.r,0,Math.PI*2);
+        ctx.fill();
+        st.y+=st.s;
+        if(st.y>c.height){
+            st.y=0;st.x=Math.random()*c.width;
+        }
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+onresize=resize;
+</script>
+
+</body>
+</html>
